@@ -12,19 +12,19 @@ public class Client {
 
 	public static void main(String[] args) throws UnknownHostException, IOException, ParseException {
 		Socket socket = new Socket("localhost", 9999);
-		JSONObject ob = new JSONObject();
-		ob.put("Dog", 123);
-		ob.put("Cat", "Meow");
-		ob.put("Spinning", "A Good Trick");
-		OutputStreamWriter obw = new OutputStreamWriter(socket.getOutputStream());
-		obw.write(ob.toString());
-		obw.flush();
+		OutputStream obw = new BufferedOutputStream(socket.getOutputStream());
 		InputStream ipr = new BufferedInputStream(socket.getInputStream());
-		String content = NetString.readString(ipr);
-		JSONParser p = new JSONParser();
-		System.out.println(p.parse(content));
-		obw.close();
-		socket.close();
+		while (true) {
+			JSONObject ob = new JSONObject();
+			ob.put("Dog", 123);
+			ob.put("Cat", "Meow");
+			ob.put("Spinning", "A Good Trick");
+			obw.write(NetString.toNetStringBytes(ob.toJSONString()));
+			obw.flush();
+			String content = NetString.readString(ipr);
+			JSONParser p = new JSONParser();
+			System.out.println(p.parse(content));
+		}
 
 	}
 
