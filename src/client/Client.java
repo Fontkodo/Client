@@ -1,7 +1,9 @@
 package client;
 
 import java.io.IOException;
+import java.net.Socket;
 
+import fontkodo.netstring.NetString;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Dimension2D;
@@ -15,9 +17,9 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 final class ClientTimer extends AnimationTimer {
-	
+
 	Client client;
-	
+
 	ClientTimer(Client client) {
 		this.client = client;
 	}
@@ -31,23 +33,45 @@ final class ClientTimer extends AnimationTimer {
 			e.printStackTrace();
 		}
 	}
-	
+
 }
 
-public class Client extends Application{
-	
+public class Client extends Application {
+
 	static final Dimension2D dimension = new Dimension2D(Screen.getPrimary().getBounds().getWidth(),
 			Screen.getPrimary().getBounds().getHeight());
-	
+
 	ClientTimer timer;
 	Canvas canvas;
 	Image background;
-	
+
+	static class Conversation implements Runnable {
+
+		@Override
+		public void run() {
+			while (true) {
+				try {
+					Socket s = new Socket("localhost", 8353);
+					while (true) {
+						String txt = NetString.readString(s.getInputStream());
+						System.out.println(txt);
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+
 	public static void main(String[] args) {
+		Thread t = new Thread(new Conversation());
+		t.start();
 		launch(args);
 	}
-	
-	void executeFrame(long now) throws IOException{
+
+	void executeFrame(long now) throws IOException {
 		double width = canvas.getWidth();
 		double height = canvas.getHeight();
 		GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -58,7 +82,7 @@ public class Client extends Application{
 		gc.restore();
 		gc.setFill(Color.WHITE);
 	}
-	
+
 	boolean turningLeft = false;
 	boolean turningRight = false;
 
@@ -80,5 +104,5 @@ public class Client extends Application{
 			timer.start();
 		}
 	}
-	
+
 }
