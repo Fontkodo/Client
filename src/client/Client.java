@@ -65,7 +65,8 @@ public class Client extends Application {
 					while (true) {
 						String txt = NetString.readString(s.getInputStream());
 						System.out.println(txt);
-						JSONArray a = (JSONArray) p.parse(txt);
+						JSONObject ob = (JSONObject) p.parse(txt);
+						JSONArray a = (JSONArray) ob.get("SpaceObjects");
 						List<SpaceObject> loso = new ArrayList<SpaceObject>();
 						for (Object o : a) {
 							JSONObject jo = (JSONObject) o;
