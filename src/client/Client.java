@@ -46,7 +46,7 @@ final class ClientTimer extends AnimationTimer {
 
 public class Client extends Application {
 
-	static final Dimension2D dimension = new Dimension2D(Screen.getPrimary().getBounds().getWidth(),
+	static Dimension2D dimension = new Dimension2D(Screen.getPrimary().getBounds().getWidth(),
 			Screen.getPrimary().getBounds().getHeight());
 
 	ClientTimer timer;
@@ -66,6 +66,8 @@ public class Client extends Application {
 						String txt = NetString.readString(s.getInputStream());
 						System.out.println(txt);
 						JSONObject ob = (JSONObject) p.parse(txt);
+						JSONObject tempDim = (JSONObject) ob.get("Dimensions");
+						//dimension = new Dimension2D((long) tempDim.get("Width"), (long) tempDim.get("Height"));
 						JSONArray a = (JSONArray) ob.get("SpaceObjects");
 						List<SpaceObject> loso = new ArrayList<SpaceObject>();
 						for (Object o : a) {
@@ -118,7 +120,6 @@ public class Client extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("Super GameFramework");
-		primaryStage.setFullScreen(true);
 		Group root = new Group();
 		canvas = new Canvas(dimension.getWidth(), dimension.getWidth());
 		canvas.setFocusTraversable(true);
