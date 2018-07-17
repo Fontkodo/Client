@@ -49,8 +49,9 @@ public class Client extends Application {
 	static Dimension2D serverDimensions = new Dimension2D(Screen.getPrimary().getBounds().getWidth(),
 			Screen.getPrimary().getBounds().getHeight());
 
+	static Stage theStage;
 	ClientTimer timer;
-	Canvas canvas;
+	static Canvas canvas;
 	Image background;
 	static List<SpaceObject> spaceObjects = new ArrayList<SpaceObject>();
 
@@ -69,6 +70,15 @@ public class Client extends Application {
 						JSONObject tempDim = (JSONObject) ob.get("Dimensions");
 						System.out.println(tempDim);
 						serverDimensions = new Dimension2D((long) tempDim.get("Width"), (long) tempDim.get("Height"));
+						if (theStage != null) {
+							if (Math.abs(serverDimensions.getWidth() - canvas.getWidth()) > 1) {
+								canvas.setWidth(serverDimensions.getWidth());
+								canvas.setHeight(serverDimensions.getHeight());
+
+								theStage.setWidth(serverDimensions.getWidth());
+								theStage.setHeight(serverDimensions.getHeight());
+							}
+						}
 						JSONArray a = (JSONArray) ob.get("SpaceObjects");
 						List<SpaceObject> loso = new ArrayList<SpaceObject>();
 						for (Object o : a) {
@@ -104,10 +114,10 @@ public class Client extends Application {
 		double width = canvas.getWidth();
 		double height = canvas.getHeight();
 		GraphicsContext gc = canvas.getGraphicsContext2D();
-		
+
 		gc.setFill(Color.BLACK);
 		gc.fillRect(0, 0, width, height);
-		//gc.drawImage(background, 0, 0);
+		// gc.drawImage(background, 0, 0);
 		for (SpaceObject so : spaceObjects) {
 			gc.save();
 			so.draw(gc);
@@ -128,10 +138,12 @@ public class Client extends Application {
 		canvas.requestFocus();
 		root.getChildren().add(canvas);
 		primaryStage.setScene(new Scene(root));
-		primaryStage.setResizable(false);
+		primaryStage.setResizable(true);
 		primaryStage.show();
+		theStage = primaryStage;
 		if (timer == null) {
-			background = ImageFactory.getImage("http://blasteroids.prototyping.site/assets/images/backgrounds/mars.jpg");
+			background = ImageFactory
+					.getImage("http://blasteroids.prototyping.site/assets/images/backgrounds/mars.jpg");
 			timer = new ClientTimer(this);
 			timer.start();
 		}
