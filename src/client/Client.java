@@ -25,6 +25,8 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -61,9 +63,9 @@ public class Client extends Application {
 	static List<SpaceObject> spaceObjects = new ArrayList<SpaceObject>();
 
 	static class GameStateReceiver implements Runnable {
-		
+
 		private Socket s;
-		
+
 		GameStateReceiver(Socket s) {
 			this.s = s;
 		}
@@ -139,7 +141,7 @@ public class Client extends Application {
 	boolean turningLeft = false;
 	boolean turningRight = false;
 
-	static BlockingQueue<Event> outgoingEvents = new ArrayBlockingQueue<Event>(10);
+	static BlockingQueue<ControlEvent> outgoingEvents = new ArrayBlockingQueue<ControlEvent>(10);
 
 	static class OutgoingCommands implements Runnable {
 
@@ -153,7 +155,7 @@ public class Client extends Application {
 		public void run() {
 			while (true) {
 				try {
-					Event event = outgoingEvents.take();
+					ControlEvent event = outgoingEvents.take();
 					JSONObject ob = event.toJSONObject();
 					String txt = ob.toJSONString();
 					byte[] b = NetString.toNetStringBytes(txt);
@@ -177,6 +179,23 @@ public class Client extends Application {
 		canvas.setFocusTraversable(true);
 		canvas.requestFocus();
 		root.getChildren().add(canvas);
+		canvas.setOnKeyPressed(e -> {
+			try {
+				if (e.getCode().equals(KeyCode.SPACE)) {
+					outgoingEvents.put(new FireEvent());
+				}
+				if (e.getCode().equals(KeyCode.UP)) {
+					outgoingEvents.put(new ForwardEvent());
+				}
+				if (e.getCode().equals(KeyCode.LEFT)) {
+					outgoingEvents.put(new LeftEvent());
+				}
+				if (e.getCode().equals(KeyCode.RIGHT)) {
+					outgoingEvents.put(new RightEvent());
+				}
+			} catch (Exception thing) {
+			}
+		});
 		primaryStage.setScene(new Scene(root));
 		primaryStage.setResizable(true);
 		primaryStage.show();
