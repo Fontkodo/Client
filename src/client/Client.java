@@ -2,8 +2,13 @@ package client;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.concurrent.*;
 import java.util.List;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -55,20 +60,23 @@ public class Client extends Application {
 	Image background;
 	static List<SpaceObject> spaceObjects = new ArrayList<SpaceObject>();
 
-	static class Conversation implements Runnable {
+	static class GameStateReceiver implements Runnable {
+		
+		private Socket s;
+		
+		GameStateReceiver(Socket s) {
+			this.s = s;
+		}
 
 		@Override
 		public void run() {
 			JSONParser p = new JSONParser();
 			while (true) {
 				try {
-					Socket s = new Socket("localhost", 8353);
 					while (true) {
 						String txt = NetString.readString(s.getInputStream());
-						System.out.println(txt);
 						JSONObject ob = (JSONObject) p.parse(txt);
 						JSONObject tempDim = (JSONObject) ob.get("Dimensions");
-						System.out.println(tempDim);
 						serverDimensions = new Dimension2D((long) tempDim.get("Width"), (long) tempDim.get("Height"));
 						if (theStage != null) {
 							if (Math.abs(serverDimensions.getWidth() - canvas.getWidth()) > 1) {
@@ -104,9 +112,11 @@ public class Client extends Application {
 
 	}
 
-	public static void main(String[] args) {
-		Thread t = new Thread(new Conversation());
-		t.start();
+	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
+		Socket s = new Socket("localhost", 8353);
+		new Thread(new GameStateReceiver(s)).start();
+		new Thread(new OutgoingCommands(s)).start();
+		outgoingEvents.put(new ConnectionEvent());
 		launch(args);
 	}
 
@@ -128,6 +138,36 @@ public class Client extends Application {
 
 	boolean turningLeft = false;
 	boolean turningRight = false;
+
+	static BlockingQueue<Event> outgoingEvents = new ArrayBlockingQueue<Event>(10);
+
+	static class OutgoingCommands implements Runnable {
+
+		private Socket s;
+
+		OutgoingCommands(Socket s) {
+			this.s = s;
+		}
+
+		@Override
+		public void run() {
+			while (true) {
+				try {
+					Event event = outgoingEvents.take();
+					JSONObject ob = event.toJSONObject();
+					String txt = ob.toJSONString();
+					byte[] b = NetString.toNetStringBytes(txt);
+					System.out.println(new String(b));
+					s.getOutputStream().write(b);
+					s.getOutputStream().flush();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
