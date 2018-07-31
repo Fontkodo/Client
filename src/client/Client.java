@@ -93,12 +93,14 @@ public class Client extends Application {
 						List<SpaceObject> loso = new ArrayList<SpaceObject>();
 						for (Object o : a) {
 							JSONObject jo = (JSONObject) o;
+							System.out.println(jo.toJSONString());
 							SpaceObject so = new SpaceObject();
 							so.imgURL = (String) jo.get("imgURL");
 							JSONObject tvo = (JSONObject) jo.get("vel");
 							so.vel = new Velocity((double) tvo.get("x"), (double) tvo.get("y"));
 							JSONObject tlo = (JSONObject) jo.get("loc");
 							so.loc = new Point2D((double) tlo.get("x"), (double) tlo.get("y"));
+							so.currentRotation = (double) jo.get("currentRotation");
 							so.rotvel = (double) jo.get("rotvel");
 							so.timestamp = (long) jo.get("timestamp");
 							loso.add(so);

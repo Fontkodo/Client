@@ -10,6 +10,7 @@ class SpaceObject {
 	String imgURL;
 	Velocity vel;
 	Point2D loc;
+	double currentRotation;
 	double rotvel;
 	long timestamp;
 	Image img = null;
@@ -23,7 +24,7 @@ class SpaceObject {
 	
 	double getRot() {
 		long elapsed = System.currentTimeMillis() - timestamp;
-		return rotvel*elapsed;
+		return -(currentRotation + rotvel*elapsed);
 	}
 	
 	void draw(GraphicsContext gc) throws IOException {
