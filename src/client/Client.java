@@ -61,6 +61,7 @@ public class Client extends Application {
 	static Canvas canvas;
 	Image background;
 	static List<SpaceObject> spaceObjects = new ArrayList<SpaceObject>();
+	static List<String> sounds = new ArrayList<String>();
 
 	static class GameStateReceiver implements Runnable {
 
@@ -106,6 +107,10 @@ public class Client extends Application {
 							loso.add(so);
 						}
 						spaceObjects = loso;
+						JSONArray audio = (JSONArray) ob.get("Sounds");
+						for (Object o : audio) {
+							AudioClipFactory.getAudioClip((String) o).play();;
+						}
 					}
 				} catch (IOException | ParseException e) {
 					// TODO Auto-generated catch block
