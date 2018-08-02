@@ -103,6 +103,7 @@ public class Client extends Application {
 							so.currentRotation = (double) jo.get("currentRotation");
 							so.rotvel = (double) jo.get("rotvel");
 							so.timestamp = (long) jo.get("timestamp");
+							so.userid = jo.getOrDefault("userid", "0").toString();
 							loso.add(so);
 						}
 						spaceObjects = loso;
@@ -167,6 +168,10 @@ public class Client extends Application {
 					byte[] b = NetString.toNetStringBytes(txt);
 					s.getOutputStream().write(b);
 					s.getOutputStream().flush();
+					if (event instanceof DisconnectionEvent) {
+						Thread.sleep(500);
+						System.exit(0);
+					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -211,6 +216,14 @@ public class Client extends Application {
 			timer = new ClientTimer(this);
 			timer.start();
 		}
+		primaryStage.setOnCloseRequest(e -> {
+			try {
+				outgoingEvents.put(new DisconnectionEvent());
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
 	}
 
 }

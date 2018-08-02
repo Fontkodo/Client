@@ -54,6 +54,14 @@ class ConnectionEvent extends ControlEvent {
 	}
 }
 
+class DisconnectionEvent extends ControlEvent {
+	JSONObject toJSONObject() {
+		JSONObject ob = super.toJSONObject();
+		ob.put("action", "disconnect");
+		return ob;
+	}
+}
+
 class LeftEvent extends ControlEvent {
 	JSONObject toJSONObject() {
 		JSONObject ob = super.toJSONObject();
