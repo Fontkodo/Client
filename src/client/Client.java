@@ -94,7 +94,6 @@ public class Client extends Application {
 						List<SpaceObject> loso = new ArrayList<SpaceObject>();
 						for (Object o : a) {
 							JSONObject jo = (JSONObject) o;
-							System.out.println(jo.toJSONString());
 							SpaceObject so = new SpaceObject();
 							so.imgURL = (String) jo.get("imgURL");
 							JSONObject tvo = (JSONObject) jo.get("vel");
@@ -166,7 +165,6 @@ public class Client extends Application {
 					JSONObject ob = event.toJSONObject();
 					String txt = ob.toJSONString();
 					byte[] b = NetString.toNetStringBytes(txt);
-					System.out.println(new String(b));
 					s.getOutputStream().write(b);
 					s.getOutputStream().flush();
 				} catch (Exception e) {
