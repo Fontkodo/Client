@@ -132,7 +132,7 @@ public class Client extends Application {
 	}
 
 	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
-		Socket s = new Socket("10.0.0.9", 8353);
+		Socket s = new Socket("Localhost", 8353);
 		new Thread(new GameStateReceiver(s)).start();
 		new Thread(new OutgoingCommands(s)).start();
 		outgoingEvents.put(new ConnectionEvent());
