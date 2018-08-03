@@ -18,6 +18,7 @@ class SpaceObject {
 	double rotvel;
 	long timestamp;
 	String userid;
+	double scale;
 	Image img = null;
 	
 	Point2D getLoc() {
@@ -39,7 +40,7 @@ class SpaceObject {
 		Point2D newLoc = getLoc();
 		gc.translate(newLoc.getX(), newLoc.getY());
 		gc.rotate(getRot()*180/Math.PI);
-		gc.scale(1, 1);
+		gc.scale(this.scale, this.scale);
 		boolean flash = ((System.currentTimeMillis() / 300) % 3) > 1;
 		if(flash && userid.equals(""+ControlEvent.getClientID())) {
 			double radius = Math.max(img.getWidth(), img.getHeight());

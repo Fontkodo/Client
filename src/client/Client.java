@@ -104,6 +104,7 @@ public class Client extends Application {
 							so.rotvel = (double) jo.get("rotvel");
 							so.timestamp = (long) jo.get("timestamp");
 							so.userid = jo.getOrDefault("userid", "0").toString();
+							so.scale = (double) jo.get("scale");
 							loso.add(so);
 						}
 						spaceObjects = loso;
