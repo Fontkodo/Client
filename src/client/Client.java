@@ -62,6 +62,15 @@ public class Client extends Application {
 	Image background;
 	static List<SpaceObject> spaceObjects = new ArrayList<SpaceObject>();
 	static List<String> sounds = new ArrayList<String>();
+	
+	static SpaceObject getMyPlayer() {
+		for(SpaceObject so : spaceObjects) {
+			if(so.userid.equals(ControlEvent.getClientID())){
+				return so;
+			}
+		}
+		return null;
+	}
 
 	static class GameStateReceiver implements Runnable {
 
@@ -123,7 +132,7 @@ public class Client extends Application {
 	}
 
 	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
-		Socket s = new Socket("localhost", 8353);
+		Socket s = new Socket("10.0.0.9", 8353);
 		new Thread(new GameStateReceiver(s)).start();
 		new Thread(new OutgoingCommands(s)).start();
 		outgoingEvents.put(new ConnectionEvent());
@@ -200,9 +209,17 @@ public class Client extends Application {
 				}
 				if (e.getCode().equals(KeyCode.LEFT)) {
 					outgoingEvents.put(new LeftEvent());
+					SpaceObject p = getMyPlayer();
+					if(p != null) {
+						p.currentRotation+= 5 * Math.PI / 180;
+					}
 				}
 				if (e.getCode().equals(KeyCode.RIGHT)) {
 					outgoingEvents.put(new RightEvent());
+					SpaceObject p = getMyPlayer();
+					if(p != null) {
+						p.currentRotation-= 5 * Math.PI / 180;
+					}
 				}
 			} catch (Exception thing) {
 			}
