@@ -1,5 +1,6 @@
 package client;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -62,10 +63,10 @@ public class Client extends Application {
 	Image background;
 	static List<SpaceObject> spaceObjects = new ArrayList<SpaceObject>();
 	static List<String> sounds = new ArrayList<String>();
-	
+
 	static SpaceObject getMyPlayer() {
-		for(SpaceObject so : spaceObjects) {
-			if(so.userid.equals(ControlEvent.getClientID())){
+		for (SpaceObject so : spaceObjects) {
+			if (so.userid.equals(ControlEvent.getClientID())) {
 				return so;
 			}
 		}
@@ -119,7 +120,8 @@ public class Client extends Application {
 						spaceObjects = loso;
 						JSONArray audio = (JSONArray) ob.get("Sounds");
 						for (Object o : audio) {
-							AudioClipFactory.getAudioClip((String) o).play();;
+							AudioClipFactory.getAudioClip((String) o).play();
+							;
 						}
 					}
 				} catch (IOException | ParseException e) {
@@ -172,16 +174,21 @@ public class Client extends Application {
 		public void run() {
 			while (true) {
 				try {
-					ControlEvent event = outgoingEvents.take();
-					JSONObject ob = event.toJSONObject();
-					String txt = ob.toJSONString();
-					byte[] b = NetString.toNetStringBytes(txt);
-					s.getOutputStream().write(b);
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();					
+					do {
+						ControlEvent event = outgoingEvents.take();
+						JSONObject ob = event.toJSONObject();
+						String txt = ob.toJSONString();
+						byte[] b = NetString.toNetStringBytes(txt);
+						baos.write(b);
+						if (event instanceof DisconnectionEvent) {
+							Thread.sleep(500);
+							System.exit(0);
+						}
+					} while (outgoingEvents.peek() != null);
+					// Don't bother flushing until all pending events are written
+					s.getOutputStream().write(baos.toByteArray());
 					s.getOutputStream().flush();
-					if (event instanceof DisconnectionEvent) {
-						Thread.sleep(500);
-						System.exit(0);
-					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -210,15 +217,15 @@ public class Client extends Application {
 				if (e.getCode().equals(KeyCode.LEFT)) {
 					outgoingEvents.put(new LeftEvent());
 					SpaceObject p = getMyPlayer();
-					if(p != null) {
-						p.currentRotation+= 5 * Math.PI / 180;
+					if (p != null) {
+						p.currentRotation += 5 * Math.PI / 180;
 					}
 				}
 				if (e.getCode().equals(KeyCode.RIGHT)) {
 					outgoingEvents.put(new RightEvent());
 					SpaceObject p = getMyPlayer();
-					if(p != null) {
-						p.currentRotation-= 5 * Math.PI / 180;
+					if (p != null) {
+						p.currentRotation -= 5 * Math.PI / 180;
 					}
 				}
 			} catch (Exception thing) {
