@@ -9,22 +9,22 @@ import java.util.Random;
 import org.json.simple.JSONObject;
 
 public class ControlEvent {
-	static private long clientID;
+	static private String clientID;
 
-	static long getClientID() {
+	static String getClientID() {
 		final String fileName = "/tmp/blasteroids.id.txt";
-		if (clientID != 0) {
+		if (clientID != null) {
 			return clientID;
 		}
 		try {
 			FileReader fr = new FileReader(fileName);
 			BufferedReader br = new BufferedReader(fr);
 			String ln = br.readLine();
-			clientID = Long.parseLong(ln);
+			clientID = "" + Long.parseLong(ln);
 			return clientID;
 		} catch (Exception e) {
 		}
-		clientID = new Random().nextLong();
+		clientID = "" + (new Random().nextLong());
 		try {
 			FileWriter fw = new FileWriter(fileName);
 			PrintWriter pw = new PrintWriter(fw);

@@ -20,6 +20,10 @@ class SpaceObject {
 	String userid;
 	double scale;
 	Image img = null;
+	long score;
+	long photonCount;
+	double fuel;
+	long shieldLevel;
 	
 	Point2D getLoc() {
 		long elapsed = System.currentTimeMillis() - timestamp;

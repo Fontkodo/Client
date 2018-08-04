@@ -121,6 +121,10 @@ public class Client extends Application {
 							so.timestamp = (long) jo.get("timestamp");
 							so.userid = jo.getOrDefault("userid", "0").toString();
 							so.scale = (double) jo.get("scale");
+							so.score = (long) jo.getOrDefault("score", 0L);
+							so.photonCount = (long) jo.getOrDefault("photonCount", 0L);
+							so.fuel = (double) jo.getOrDefault("fuel", 0.0);
+							so.shieldLevel = (long) jo.getOrDefault("shieldLevel", 0L);
 							loso.add(so);
 						}
 						spaceObjects = loso;
@@ -161,6 +165,13 @@ public class Client extends Application {
 			gc.restore();
 		}
 		gc.setFill(Color.WHITE);
+		SpaceObject p = getMyPlayer();
+		if (p != null) {
+		gc.fillText(String.format("Score: %d\nPhotons: %d\nFuel: %f\nShield Level: %d", p.score,
+				p.photonCount,
+				p.fuel,
+				p.shieldLevel), 10, 10);
+		}
 	}
 
 	boolean turningLeft = false;
