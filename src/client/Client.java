@@ -35,16 +35,22 @@ import javafx.stage.Stage;
 final class ClientTimer extends AnimationTimer {
 
 	Client client;
+	long lastFrameNanos;
 
 	ClientTimer(Client client) {
 		this.client = client;
+		this.lastFrameNanos = 0;
 	}
 
 	@Override
 	public void handle(long now) {
+		if ((now - lastFrameNanos) < 25_000_000) {
+			return;
+		}
+		lastFrameNanos = now;
 		try {
 			this.client.executeFrame(now);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
