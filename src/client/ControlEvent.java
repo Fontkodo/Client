@@ -86,6 +86,14 @@ class ForwardEvent extends ControlEvent {
 	}
 }
 
+class BackwardEvent extends ControlEvent {
+	JSONObject toJSONObject() {
+		JSONObject ob = super.toJSONObject();
+		ob.put("action", "backward");
+		return ob;
+	}
+}
+
 class FireEvent extends ControlEvent {
 	JSONObject toJSONObject() {
 		JSONObject ob = super.toJSONObject();

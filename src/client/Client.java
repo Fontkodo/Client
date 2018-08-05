@@ -235,6 +235,9 @@ public class Client extends Application {
 				if (e.getCode().equals(KeyCode.UP)) {
 					outgoingEvents.put(new ForwardEvent());
 				}
+				if (e.getCode().equals(KeyCode.DOWN)) {
+					outgoingEvents.put(new BackwardEvent());
+				}
 				if (e.getCode().equals(KeyCode.LEFT)) {
 					outgoingEvents.put(new LeftEvent());
 					SpaceObject p = getMyPlayer();
