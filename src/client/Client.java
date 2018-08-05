@@ -6,9 +6,11 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.json.simple.JSONArray;
@@ -69,6 +71,7 @@ public class Client extends Application {
 	Image background;
 	static List<SpaceObject> spaceObjects = new ArrayList<SpaceObject>();
 	static List<String> sounds = new ArrayList<String>();
+	static Map<String, Long> highScores = new HashMap<String, Long>();
 
 	static SpaceObject getMyPlayer() {
 		for (SpaceObject so : spaceObjects) {
@@ -125,13 +128,13 @@ public class Client extends Application {
 							so.photonCount = (long) jo.getOrDefault("photonCount", 0L);
 							so.fuel = (double) jo.getOrDefault("fuel", 0.0);
 							so.shieldLevel = (long) jo.getOrDefault("shieldLevel", 0L);
+							so.highScore = (long) jo.getOrDefault("highScore", 0L);
 							loso.add(so);
 						}
 						spaceObjects = loso;
 						JSONArray audio = (JSONArray) ob.get("Sounds");
 						for (Object o : audio) {
 							AudioClipFactory.getAudioClip((String) o).play();
-							;
 						}
 					}
 				} catch (IOException | ParseException e) {
@@ -167,10 +170,11 @@ public class Client extends Application {
 		gc.setFill(Color.WHITE);
 		SpaceObject p = getMyPlayer();
 		if (p != null) {
-		gc.fillText(String.format("Score: %d\nPhotons: %d\nFuel: %f\nShield Level: %d", p.score,
+		gc.fillText(String.format("Score: %d\nPhotons: %d\nFuel: %f\nShield Level: %d\nHigh Score: %d", p.score,
 				p.photonCount,
 				p.fuel,
-				p.shieldLevel), 10, 10);
+				p.shieldLevel,
+				p.highScore), 10, 10);
 		}
 	}
 

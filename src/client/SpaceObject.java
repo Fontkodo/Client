@@ -24,6 +24,7 @@ class SpaceObject {
 	long photonCount;
 	double fuel;
 	long shieldLevel;
+	long highScore;
 	
 	Point2D getLoc() {
 		long elapsed = System.currentTimeMillis() - timestamp;
