@@ -170,11 +170,11 @@ public class Client extends Application {
 		gc.setFill(Color.WHITE);
 		SpaceObject p = getMyPlayer();
 		if (p != null) {
-		gc.fillText(String.format("Score: %d\nPhotons: %d\nFuel: %f\nShield Level: %d\nHigh Score: %d", p.score,
-				p.photonCount,
-				p.fuel,
-				p.shieldLevel,
-				p.highScore), 10, 10);
+			gc.save();
+			gc.scale(1.2, 1.2);
+			gc.fillText(String.format("Score: %d\nPhotons: %d\nFuel: %.2f\nShield Level: %d\nHigh Score: %d", p.score,
+					p.photonCount, p.fuel, p.shieldLevel, p.highScore), 10, 20);
+			gc.restore();
 		}
 	}
 
@@ -195,7 +195,7 @@ public class Client extends Application {
 		public void run() {
 			while (true) {
 				try {
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();					
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					do {
 						ControlEvent event = outgoingEvents.take();
 						JSONObject ob = event.toJSONObject();
