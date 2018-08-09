@@ -25,6 +25,7 @@ class SpaceObject {
 	double fuel;
 	long shieldLevel;
 	long highScore;
+	long lastPredictiveTurn;
 	
 	Point2D getLoc() {
 		long elapsed = System.currentTimeMillis() - timestamp;

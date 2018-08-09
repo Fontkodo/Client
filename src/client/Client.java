@@ -81,6 +81,8 @@ public class Client extends Application {
 		}
 		return null;
 	}
+	
+	static long millisecondAdjustment;
 
 	static class GameStateReceiver implements Runnable {
 
@@ -99,6 +101,14 @@ public class Client extends Application {
 						String txt = NetString.readString(s.getInputStream());
 						JSONObject ob = (JSONObject) p.parse(txt);
 						JSONObject tempDim = (JSONObject) ob.get("Dimensions");
+						{
+							long delay = System.currentTimeMillis() - (long) ob.get("currentMillis");
+							if(millisecondAdjustment == 0) {
+								millisecondAdjustment = delay;
+							} else {
+								millisecondAdjustment = ((19 * millisecondAdjustment) + delay) / 20;
+							}
+						}
 						serverDimensions = new Dimension2D((long) tempDim.get("Width"), (long) tempDim.get("Height"));
 						if (theStage != null) {
 							if (Math.abs(serverDimensions.getWidth() - canvas.getWidth()) > 1) {
@@ -121,7 +131,7 @@ public class Client extends Application {
 							so.loc = new Point2D((double) tlo.get("x"), (double) tlo.get("y"));
 							so.currentRotation = (double) jo.get("currentRotation");
 							so.rotvel = (double) jo.get("rotvel");
-							so.timestamp = (long) jo.get("timestamp");
+							so.timestamp = (long) jo.get("timestamp") + millisecondAdjustment;
 							so.userid = jo.getOrDefault("userid", "0").toString();
 							so.scale = (double) jo.get("scale");
 							so.score = (long) jo.getOrDefault("score", 0L);
@@ -147,7 +157,7 @@ public class Client extends Application {
 	}
 
 	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
-		Socket s = new Socket("Localhost", 8353);
+		Socket s = new Socket("localhost", 6081);
 		new Thread(new GameStateReceiver(s)).start();
 		new Thread(new OutgoingCommands(s)).start();
 		outgoingEvents.put(new ConnectionEvent());
@@ -172,8 +182,9 @@ public class Client extends Application {
 		if (p != null) {
 			gc.save();
 			gc.scale(1.2, 1.2);
-			gc.fillText(String.format("Score: %d\nPhotons: %d\nFuel: %.2f\nShield Level: %d\nHigh Score: %d", p.score,
-					p.photonCount, p.fuel, p.shieldLevel, p.highScore), 10, 20);
+			gc.fillText(String.format(
+					"Score: %d\nPhotons: %d\nFuel: %.2f\nShield Level: %d\nHigh Score: %d\nAdjustment: %d\n", p.score,
+					p.photonCount, p.fuel, p.shieldLevel, p.highScore, millisecondAdjustment), 10, 20);
 			gc.restore();
 		}
 	}
@@ -242,14 +253,20 @@ public class Client extends Application {
 					outgoingEvents.put(new LeftEvent());
 					SpaceObject p = getMyPlayer();
 					if (p != null) {
-						p.currentRotation += 5 * Math.PI / 180;
+						if(p.lastPredictiveTurn < System.currentTimeMillis() - millisecondAdjustment) {
+							p.currentRotation += 5 * Math.PI / 180;
+							p.lastPredictiveTurn = System.currentTimeMillis();
+						}
 					}
 				}
 				if (e.getCode().equals(KeyCode.RIGHT)) {
 					outgoingEvents.put(new RightEvent());
 					SpaceObject p = getMyPlayer();
 					if (p != null) {
-						p.currentRotation -= 5 * Math.PI / 180;
+						if(p.lastPredictiveTurn < System.currentTimeMillis() - millisecondAdjustment) {
+							p.currentRotation -= 5 * Math.PI / 180;
+							p.lastPredictiveTurn = System.currentTimeMillis();
+						}
 					}
 				}
 			} catch (Exception thing) {
