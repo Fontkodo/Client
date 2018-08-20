@@ -2,11 +2,9 @@ package client;
 
 import java.io.IOException;
 
-import com.sun.javafx.sg.prism.NGCanvas;
-
-import javafx.geometry.*;
-import javafx.scene.canvas.*;
-import javafx.scene.image.*;
+import javafx.geometry.Point2D;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 

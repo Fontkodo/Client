@@ -1,7 +1,5 @@
 package client;
 
-import javafx.geometry.*;
-
 final class Velocity {
 	
 	final double x;

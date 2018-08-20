@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javafx.scene.media.*;
+import javafx.scene.media.AudioClip;
 
 public final class AudioClipFactory {
 	private static final Map<String, AudioClip> cache = new HashMap<String, AudioClip>();

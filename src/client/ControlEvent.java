@@ -20,6 +20,7 @@ public class ControlEvent {
 			FileReader fr = new FileReader(fileName);
 			BufferedReader br = new BufferedReader(fr);
 			String ln = br.readLine();
+			br.close();
 			clientID = "" + Long.parseLong(ln);
 			return clientID;
 		} catch (Exception e) {
